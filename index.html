@@ -6,6 +6,11 @@
     <title>Gabriel Shcmeisk</title>
 	<link rel="icon" type="image/x-icon" href="https://i.imgur.com/EXORH9a.jpeg">
     <style>
+        /* 1. Rolagem Suave (Adicionado) */
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
             height: 100vh;
@@ -16,6 +21,7 @@
             overflow: hidden;
             color: white;
             font-family: Arial, sans-serif;
+            cursor: none; /* Esconde o cursor padrão */
         }
 
         canvas {
@@ -59,21 +65,26 @@
             align-items: center;
             gap: 10px;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #7a4fff, #5e3eb0);
+            /* Modificado para permitir animação do gradiente: */
+            background: linear-gradient(135deg, #7a4fff, #5e3eb0, #7a4fff);
+            background-size: 200% 200%; 
+            background-position: 0% 50%;
             color: white;
             border: none;
             border-radius: 50px;
             font-size: 18px;
-            cursor: pointer;
+            cursor: none; /* Mantém o cursor none, será gerenciado pelo JS */
             text-decoration: none;
             font-weight: bold;
             text-transform: uppercase;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, background-position 0.5s ease;
             box-shadow: 0px 0px 15px rgba(120, 63, 255, 0.5);
         }
 
+        /* Microinteração Avançada nos Botões (Adicionado) */
         .btn:hover {
             transform: scale(1.1);
+            background-position: 100% 50%; /* Move o gradiente */
         }
 
         .subtitle {
@@ -99,7 +110,7 @@
             border: none;
             padding: 10px;
             border-radius: 50%;
-            cursor: pointer;
+            cursor: none; /* Mantém o cursor none, será gerenciado pelo JS */
             color: white;
             font-size: 18px;
             display: flex;
@@ -133,6 +144,41 @@
         .volume-button:not(.x)::before {
             content: "🔊";
             font-size: 20px;
+        }
+
+        /* Efeito de Cursor Personalizado (Adicionado) */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(122, 79, 255, 0.7); /* Cor do gradiente */
+            pointer-events: none; /* Garante que o cursor não bloqueie cliques */
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-radius 0.3s;
+        }
+        
+        /* Estado do cursor quando passa por cima de um elemento interativo */
+        .custom-cursor.grow {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Animação Scroll Reveal (Adicionado) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 0.8s ease-out;
+            transition-delay: var(--delay);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         @media (max-width: 768px) {
@@ -174,6 +220,7 @@
                 top: 10px;
                 right: 10px; 
                 padding: 8px;
+                cursor: pointer; /* Restaura o cursor em mobile, já que o customizado é complexo em touch */
             }
             
             .volume-slider {
@@ -188,6 +235,17 @@
                 visibility: visible;
                 position: absolute; 
             }
+            
+            /* Desabilitar o cursor customizado em telas pequenas */
+            .custom-cursor {
+                display: none !important; 
+            }
+            body {
+                cursor: auto; 
+            }
+            .btn, .volume-button {
+                cursor: pointer;
+            }
         }
     </style>
 </head>
@@ -196,19 +254,20 @@
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3" type="audio/mpeg">
     </audio>
 
-    <canvas id="bg"></canvas>
-    <div class="container">
-        <img src="https://i.imgur.com/EXORH9a.jpeg" alt="Gabriel Schmeisk" class="image">
-        <h1>Seja Bem-Vindo(a)</h1>
-        <p class="subtitle">Assim como o universo está em constante expansão, o conhecimento e o desenvolvimento evoluem infinitamente.</p>
+    <div class="custom-cursor"></div> <canvas id="bg"></canvas>
+    
+    <div class="container reveal" style="--delay: 0s;">
+        <img src="https://i.imgur.com/EXORH9a.jpeg" alt="Gabriel Schmeisk" class="image reveal" style="--delay: 0.2s;">
+        <h1 class="reveal" style="--delay: 0.4s;">Seja Bem-Vindo(a)</h1>
+        <p class="subtitle reveal" style="--delay: 0.6s;">Assim como o universo está em constante expansão, o conhecimento e o desenvolvimento evoluem infinitamente.</p>
         <div class="buttons">
-            <a href="https://github.com/GabrielSchmeisk/GabrielSchmeisk" class="btn" target="_blank">💻 GitHub</a>
-            <a href="https://www.linkedin.com/in/gabriel-schmeisk-107778196/?originalSubdomain=br" class="btn" target="_blank">💼 LinkedIn</a>
-            <a href="https://www.instagram.com/bielschmeisk/" class="btn" target="_blank">📷 Instagram</a>
+            <a href="https://github.com/GabrielSchmeisk/GabrielSchmeisk" class="btn reveal" style="--delay: 0.8s;" target="_blank">💻 GitHub</a>
+            <a href="https://www.linkedin.com/in/gabriel-schmeisk-107778196/?originalSubdomain=br" class="btn reveal" style="--delay: 1.0s;" target="_blank">💼 LinkedIn</a>
+            <a href="https://www.instagram.com/bielschmeisk/" class="btn reveal" style="--delay: 1.2s;" target="_blank">📷 Instagram</a>
         </div>
     </div>
 
-    <div class="copyright">
+    <div class="copyright reveal" style="--delay: 1.4s;">
         © 2025 Todos os direitos reservados - Gabriel Schmeisk.
     </div>
 
@@ -218,6 +277,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // --- Controle de Áudio ---
             const savedVolume = localStorage.getItem('volume');
             const audio = document.getElementById("background-audio");
 
@@ -233,6 +293,35 @@
             }, { once: true }); 
             
             setVolume(document.querySelector('.volume-slider').value);
+
+
+            // --- Cursor Personalizado (Adicionado) ---
+            const customCursor = document.querySelector('.custom-cursor');
+            const interactiveElements = document.querySelectorAll('a, .btn, .volume-button');
+
+            if (window.innerWidth >= 768) { // Só ativa em telas maiores
+                document.addEventListener('mousemove', (e) => {
+                    customCursor.style.left = e.clientX + 'px';
+                    customCursor.style.top = e.clientY + 'px';
+                });
+
+                interactiveElements.forEach(element => {
+                    element.addEventListener('mouseenter', () => customCursor.classList.add('grow'));
+                    element.addEventListener('mouseleave', () => customCursor.classList.remove('grow'));
+                });
+            }
+
+
+            // --- Animação Scroll Reveal (Adicionado) ---
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            // Força a animação de "revelar" imediatamente ao carregar
+            revealElements.forEach(el => {
+                const delay = el.style.getPropertyValue('--delay');
+                setTimeout(() => {
+                    el.classList.add('visible');
+                }, parseFloat(delay) * 1000);
+            });
         });
 
         function setVolume(value) {
@@ -253,6 +342,7 @@
             }
         }
 
+        // --- Animação de Fundo (Estrelas) ---
         const canvas = document.getElementById("bg");
         const ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth;
