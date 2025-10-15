@@ -194,7 +194,7 @@
                 max-width: 90%;
                 padding: 20px;
                 backdrop-filter: blur(10px);
-                margin-bottom: 50px;
+                margin-bottom: 50px; /* **CORREÇÃO: Adiciona espaço abaixo do container para o rodapé** */
             }
 
             .image {
@@ -215,7 +215,7 @@
                 top: 10px;
                 right: 10px; 
                 padding: 8px;
-                cursor: pointer; /* Garante que o cursor normal apareça em mobile */
+                cursor: pointer;
             }
             
             .volume-slider {
@@ -231,6 +231,7 @@
                 position: absolute; 
             }
             
+            /* Desabilitar o cursor customizado em telas pequenas */
             .custom-cursor {
                 display: none !important; 
             }
@@ -241,6 +242,7 @@
                 cursor: pointer;
             }
             
+            /* Novo alinhamento do rodapé para mobile */
             .copyright {
                 position: static;
                 margin-top: 20px;
@@ -272,12 +274,12 @@
         © 2025 Todos os direitos reservados - Gabriel Schmeisk.
     </div>
 
-    <div class="volume-button" onclick="window.innerWidth <= 768 ? toggleMute() : this.classList.toggle('active')">
+    <div class="volume-button" onclick="handleVolumeClick(this)">
         <input type="range" class="volume-slider" min="0" max="100" value="100" oninput="setVolume(this.value)">
     </div>
 
     <script>
-        // Função para silenciar ou restaurar o volume (CORRIGIDA)
+        // Função para silenciar ou restaurar o volume
         function toggleMute() {
             const audio = document.getElementById("background-audio");
             const slider = document.querySelector('.volume-slider');
@@ -290,13 +292,21 @@
                 setVolume(0);
             } else {
                 // Se estiver mutado (volume 0), restaura para o último volume salvo ou 10
-                const lastVolume = localStorage.getItem('lastVolume');
-                // Adicionado parseInt() para garantir que o valor seja um número
-                const restoredVolume = lastVolume ? parseInt(lastVolume) : 10;
-                setVolume(restoredVolume);
+                const lastVolume = localStorage.getItem('lastVolume') || 10;
+                setVolume(lastVolume);
             }
-            // Garante que o slider feche, caso esteja aberto
-            volumeButton.classList.remove('active'); 
+            volumeButton.classList.remove('active'); // Garante que o slider feche
+        }
+
+        // Nova função que gerencia o clique no botão de volume (desktop vs mobile)
+        function handleVolumeClick(button) {
+            if (window.innerWidth <= 768) {
+                // Em mobile, apenas silencia/desilencia
+                toggleMute();
+            } else {
+                // Em desktop, ativa/desativa o slider
+                button.classList.toggle('active');
+            }
         }
 
         document.addEventListener("DOMContentLoaded", function () {
