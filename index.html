@@ -6,7 +6,6 @@
     <title>Gabriel Shcmeisk</title>
 	<link rel="icon" type="image/x-icon" href="https://i.imgur.com/EXORH9a.jpeg">
     <style>
-        /* 1. Rolagem Suave (Adicionado) */
         html {
             scroll-behavior: smooth;
         }
@@ -21,7 +20,7 @@
             overflow: hidden;
             color: white;
             font-family: Arial, sans-serif;
-            cursor: none; /* Esconde o cursor padrão */
+            cursor: none;
         }
 
         canvas {
@@ -65,7 +64,6 @@
             align-items: center;
             gap: 10px;
             padding: 15px 40px;
-            /* Modificado para permitir animação do gradiente: */
             background: linear-gradient(135deg, #7a4fff, #5e3eb0, #7a4fff);
             background-size: 200% 200%; 
             background-position: 0% 50%;
@@ -73,7 +71,7 @@
             border: none;
             border-radius: 50px;
             font-size: 18px;
-            cursor: none; /* Mantém o cursor none, será gerenciado pelo JS */
+            cursor: none;
             text-decoration: none;
             font-weight: bold;
             text-transform: uppercase;
@@ -81,10 +79,9 @@
             box-shadow: 0px 0px 15px rgba(120, 63, 255, 0.5);
         }
 
-        /* Microinteração Avançada nos Botões (Adicionado) */
         .btn:hover {
             transform: scale(1.1);
-            background-position: 100% 50%; /* Move o gradiente */
+            background-position: 100% 50%;
         }
 
         .subtitle {
@@ -110,7 +107,7 @@
             border: none;
             padding: 10px;
             border-radius: 50%;
-            cursor: none; /* Mantém o cursor none, será gerenciado pelo JS */
+            cursor: none;
             color: white;
             font-size: 18px;
             display: flex;
@@ -146,7 +143,6 @@
             font-size: 20px;
         }
 
-        /* Efeito de Cursor Personalizado (Adicionado) */
         .custom-cursor {
             position: fixed;
             top: 0;
@@ -154,21 +150,19 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background-color: rgba(122, 79, 255, 0.7); /* Cor do gradiente */
-            pointer-events: none; /* Garante que o cursor não bloqueie cliques */
+            background-color: rgba(122, 79, 255, 0.7);
+            pointer-events: none;
             transform: translate(-50%, -50%);
             z-index: 9999;
             transition: width 0.3s, height 0.3s, background-color 0.3s, border-radius 0.3s;
         }
         
-        /* Estado do cursor quando passa por cima de um elemento interativo */
         .custom-cursor.grow {
             width: 40px;
             height: 40px;
             background-color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Animação Scroll Reveal (Adicionado) */
         .reveal {
             opacity: 0;
             transform: translateY(20px);
@@ -200,6 +194,7 @@
                 max-width: 90%;
                 padding: 20px;
                 backdrop-filter: blur(10px);
+                margin-bottom: 50px; /* **CORREÇÃO: Adiciona espaço abaixo do container para o rodapé** */
             }
 
             .image {
@@ -220,7 +215,7 @@
                 top: 10px;
                 right: 10px; 
                 padding: 8px;
-                cursor: pointer; /* Restaura o cursor em mobile, já que o customizado é complexo em touch */
+                cursor: pointer;
             }
             
             .volume-slider {
@@ -243,8 +238,14 @@
             body {
                 cursor: auto; 
             }
-            .btn, .volume-button {
+            .btn {
                 cursor: pointer;
+            }
+            
+            /* Novo alinhamento do rodapé para mobile */
+            .copyright {
+                position: static;
+                margin-top: 20px;
             }
         }
     </style>
@@ -254,7 +255,9 @@
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="custom-cursor"></div> <canvas id="bg"></canvas>
+    <div class="custom-cursor"></div>
+
+    <canvas id="bg"></canvas>
     
     <div class="container reveal" style="--delay: 0s;">
         <img src="https://i.imgur.com/EXORH9a.jpeg" alt="Gabriel Schmeisk" class="image reveal" style="--delay: 0.2s;">
@@ -266,16 +269,46 @@
             <a href="https://www.instagram.com/bielschmeisk/" class="btn reveal" style="--delay: 1.2s;" target="_blank">📷 Instagram</a>
         </div>
     </div>
-
+    
     <div class="copyright reveal" style="--delay: 1.4s;">
         © 2025 Todos os direitos reservados - Gabriel Schmeisk.
     </div>
 
-    <div class="volume-button" onclick="this.classList.toggle('active')">
+    <div class="volume-button" onclick="handleVolumeClick(this)">
         <input type="range" class="volume-slider" min="0" max="100" value="100" oninput="setVolume(this.value)">
     </div>
 
     <script>
+        // Função para silenciar ou restaurar o volume
+        function toggleMute() {
+            const audio = document.getElementById("background-audio");
+            const slider = document.querySelector('.volume-slider');
+            const volumeButton = document.querySelector('.volume-button');
+            const currentVolume = audio.volume * 100;
+
+            if (currentVolume > 0) {
+                // Se não estiver mutado, salva o volume atual e muta
+                localStorage.setItem('lastVolume', currentVolume);
+                setVolume(0);
+            } else {
+                // Se estiver mutado (volume 0), restaura para o último volume salvo ou 10
+                const lastVolume = localStorage.getItem('lastVolume') || 10;
+                setVolume(lastVolume);
+            }
+            volumeButton.classList.remove('active'); // Garante que o slider feche
+        }
+
+        // Nova função que gerencia o clique no botão de volume (desktop vs mobile)
+        function handleVolumeClick(button) {
+            if (window.innerWidth <= 768) {
+                // Em mobile, apenas silencia/desilencia
+                toggleMute();
+            } else {
+                // Em desktop, ativa/desativa o slider
+                button.classList.toggle('active');
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             // --- Controle de Áudio ---
             const savedVolume = localStorage.getItem('volume');
@@ -295,11 +328,11 @@
             setVolume(document.querySelector('.volume-slider').value);
 
 
-            // --- Cursor Personalizado (Adicionado) ---
+            // --- Cursor Personalizado ---
             const customCursor = document.querySelector('.custom-cursor');
             const interactiveElements = document.querySelectorAll('a, .btn, .volume-button');
 
-            if (window.innerWidth >= 768) { // Só ativa em telas maiores
+            if (window.innerWidth >= 768) {
                 document.addEventListener('mousemove', (e) => {
                     customCursor.style.left = e.clientX + 'px';
                     customCursor.style.top = e.clientY + 'px';
@@ -312,10 +345,9 @@
             }
 
 
-            // --- Animação Scroll Reveal (Adicionado) ---
+            // --- Animação Scroll Reveal ---
             const revealElements = document.querySelectorAll('.reveal');
             
-            // Força a animação de "revelar" imediatamente ao carregar
             revealElements.forEach(el => {
                 const delay = el.style.getPropertyValue('--delay');
                 setTimeout(() => {
@@ -324,6 +356,7 @@
             });
         });
 
+        // Função para controlar o volume
         function setVolume(value) {
             const audio = document.getElementById("background-audio");
             audio.volume = value / 100;
