@@ -215,7 +215,7 @@
                 top: 10px;
                 right: 10px; 
                 padding: 8px;
-                cursor: pointer; /* Garante que o cursor normal apareça em mobile */
+                cursor: pointer;
             }
             
             .volume-slider {
@@ -277,38 +277,36 @@
     </div>
 
     <script>
-        // Função para silenciar ou restaurar o volume (CORRIGIDA)
         function toggleMute() {
             const audio = document.getElementById("background-audio");
-            const slider = document.querySelector('.volume-slider');
             const volumeButton = document.querySelector('.volume-button');
             const currentVolume = audio.volume * 100;
 
             if (currentVolume > 0) {
-                // Se não estiver mutado, salva o volume atual e muta
                 localStorage.setItem('lastVolume', currentVolume);
                 setVolume(0);
             } else {
-                // Se estiver mutado (volume 0), restaura para o último volume salvo ou 10
                 const lastVolume = localStorage.getItem('lastVolume');
-                // Adicionado parseInt() para garantir que o valor seja um número
-                const restoredVolume = lastVolume ? parseInt(lastVolume) : 10;
+                const restoredVolume = lastVolume ? parseInt(lastVolume) : 5; 
                 setVolume(restoredVolume);
             }
-            // Garante que o slider feche, caso esteja aberto
             volumeButton.classList.remove('active'); 
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // --- Controle de Áudio ---
             const savedVolume = localStorage.getItem('volume');
             const audio = document.getElementById("background-audio");
+            
+            let defaultVolume = 10; 
+            if (window.innerWidth <= 768) {
+                defaultVolume = 5; 
+            }
 
             if (savedVolume !== null) {
                 audio.volume = savedVolume / 100;
                 document.querySelector('.volume-slider').value = savedVolume;
             } else {
-                audio.volume = 0.1;
+                audio.volume = defaultVolume / 100; 
             }
 
             document.body.addEventListener('click', function () {
@@ -317,8 +315,6 @@
             
             setVolume(document.querySelector('.volume-slider').value);
 
-
-            // --- Cursor Personalizado ---
             const customCursor = document.querySelector('.custom-cursor');
             const interactiveElements = document.querySelectorAll('a, .btn, .volume-button');
 
@@ -334,8 +330,6 @@
                 });
             }
 
-
-            // --- Animação Scroll Reveal ---
             const revealElements = document.querySelectorAll('.reveal');
             
             revealElements.forEach(el => {
@@ -346,7 +340,6 @@
             });
         });
 
-        // Função para controlar o volume
         function setVolume(value) {
             const audio = document.getElementById("background-audio");
             audio.volume = value / 100;
@@ -365,7 +358,6 @@
             }
         }
 
-        // --- Animação de Fundo (Estrelas) ---
         const canvas = document.getElementById("bg");
         const ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth;
