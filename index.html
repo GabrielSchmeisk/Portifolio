@@ -91,7 +91,6 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Botão de controle de volume */
         .volume-button {
             position: fixed;
             top: 20px;
@@ -116,17 +115,16 @@
         .volume-slider {
             position: absolute;
             top: 20px;
-            left: -100px; /* Ajustando a posição para a esquerda */
+            left: -100px;
             width: 95px;
             visibility: hidden;
-            transform: rotate(180deg); /* Inverte a barra de volume */
+            transform: rotate(180deg);
         }
 
         .volume-button.active .volume-slider {
             visibility: visible;
         }
 
-        /* Adicionar o "X" ao ícone de som quando o volume for 0 */
         .volume-button.x::before {
             content: "❌";
             font-size: 20px;
@@ -138,62 +136,54 @@
         }
         
         @media (max-width: 768px) {
-            /* 1. Botões em Coluna e Alinhamento */
             .buttons {
-                /* Muda o flexbox para empilhar os botões verticalmente */
                 flex-direction: column; 
-                gap: 10px; /* Reduz o espaço entre eles */
+                gap: 10px;
                 margin-top: 15px;
             }
 
-            /* 2. Redução do Preenchimento e Tamanho dos Botões */
             .btn {
-                padding: 12px 20px; /* Reduz o preenchimento para botões mais finos */
-                font-size: 16px; /* Tamanho da fonte um pouco menor */
-                width: 100%; /* Garante que os botões ocupem quase toda a largura do container */
-                box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+                padding: 10px 15px;
+                font-size: 14px;
+                width: 100%; 
+                box-sizing: border-box; 
+                box-shadow: none;
             }
 
-            /* 3. Ajuste do Container Principal */
             .container {
-                max-width: 90%; /* Aumenta a largura máxima para usar melhor o espaço em telas menores */
-                padding: 20px; /* Reduz o preenchimento interno */
-                backdrop-filter: blur(10px); /* Blur um pouco mais sutil em telas menores */
+                max-width: 90%;
+                padding: 20px;
+                backdrop-filter: blur(10px);
             }
 
-            /* 4. Ajuste da Imagem e Títulos */
             .image {
-                width: 120px; /* Reduz o tamanho da imagem de perfil */
+                width: 120px;
                 height: 120px;
                 margin-bottom: 15px;
             }
 
             h1 {
-                font-size: 28px; /* Reduz o tamanho do título principal */
+                font-size: 28px;
             }
 
             .subtitle {
-                font-size: 16px; /* Reduz o tamanho do subtítulo */
+                font-size: 16px;
             }
 
-            /* 5. Ajuste do Controle de Volume para Móvel */
             .volume-button {
-                top: 10px; /* Move para o canto superior */
+                top: 10px;
                 right: 10px; 
                 padding: 8px;
             }
             
-            /* Reposiciona o slider de volume para aparecer abaixo ou ao lado */
             .volume-slider {
-                /* Desativa a rotação e move para uma posição mais acessível em toque */
                 transform: rotate(0deg); 
-                top: 50px; /* Coloca o slider abaixo do botão de volume */
+                top: 50px;
                 right: 0px; 
-                left: auto; /* Remove o ajuste de left */
+                left: auto;
                 width: 100px;
             }
 
-            /* Ação ao clicar no botão de volume: mostra o slider */
             .volume-button.active .volume-slider {
                 visibility: visible;
                 position: absolute; 
@@ -228,40 +218,32 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Verifica se existe um volume salvo no localStorage
             const savedVolume = localStorage.getItem('volume');
             const audio = document.getElementById("background-audio");
 
-            // Se um volume salvo existir, ajusta o volume
             if (savedVolume !== null) {
                 audio.volume = savedVolume / 100;
                 document.querySelector('.volume-slider').value = savedVolume;
             } else {
-                audio.volume = 0.1; // Define volume padrão como 10% (ajustado para ser menos intrusivo)
+                audio.volume = 0.1;
             }
 
-            // Espera a interação do usuário para iniciar o áudio
             document.body.addEventListener('click', function () {
-                audio.play().catch(e => console.log("Áudio não pôde ser iniciado: " + e)); // Adicionado catch para evitar erros no console
-            }, { once: true }); // Executa o listener apenas uma vez
+                audio.play().catch(e => console.log("Áudio não pôde ser iniciado: " + e));
+            }, { once: true }); 
             
-            // Atualiza o ícone de volume na inicialização
             setVolume(document.querySelector('.volume-slider').value);
         });
 
-        // Função para controlar o volume
         function setVolume(value) {
             const audio = document.getElementById("background-audio");
             audio.volume = value / 100;
 
-            // Salva o volume no localStorage
             localStorage.setItem('volume', value);
 
-            // Atualiza o ícone para "X" se o volume for 0
             const volumeButton = document.querySelector('.volume-button');
             const volumeSlider = document.querySelector('.volume-slider');
 
-            // Atualiza a visualização da posição do controle de volume
             volumeSlider.value = value;
 
             if (value == 0) {
@@ -276,7 +258,6 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        // Adicionando listener para redimensionamento de janela (responsividade do canvas)
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
