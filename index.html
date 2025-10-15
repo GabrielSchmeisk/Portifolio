@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabriel Shcmeisk</title>
+	<link rel="icon" type="image/x-icon" href="https://i.imgur.com/EXORH9a.jpeg">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            overflow: hidden;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 80%;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.2); /* Melhorar o contraste */
+            border-radius: 20px; /* Bordas mais suaves */
+            backdrop-filter: blur(15px); /* Efeito de blur mais sutil */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Borda mais suave e brilhante */
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.15); /* Sombra suave */
+        }
+
+        .image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #7a4fff, #5e3eb0); /* Gradiente roxo azulado */
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: transform 0.3s ease;
+            box-shadow: 0px 0px 15px rgba(120, 63, 255, 0.5); /* Cor de sombra ajustada */
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+        }
+
+        .subtitle {
+            font-size: 20px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Botão de controle de volume */
+        .volume-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .volume-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .volume-slider {
+            position: absolute;
+            top: 20px;
+            left: -100px; /* Ajustando a posição para a esquerda */
+            width: 95px;
+            visibility: hidden;
+            transform: rotate(180deg); /* Inverte a barra de volume */
+        }
+
+        .volume-button.active .volume-slider {
+            visibility: visible;
+        }
+
+        /* Adicionar o "X" ao ícone de som quando o volume for 0 */
+        .volume-button.x::before {
+            content: "❌";
+            font-size: 20px;
+        }
+
+        .volume-button:not(.x)::before {
+            content: "🔊";
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-audio" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3" type="audio/mpeg">
+    </audio>
+
+    <canvas id="bg"></canvas>
+    <div class="container">
+        <img src="https://i.imgur.com/EXORH9a.jpeg" alt="Gabriel Schmeisk" class="image">
+        <h1>Seja Bem-Vindo(a)</h1>
+        <p class="subtitle">Assim como o universo está em constante expansão, o conhecimento e o desenvolvimento evoluem infinitamente.</p>
+        <div class="buttons">
+            <a href="https://github.com/GabrielSchmeisk/GabrielSchmeisk" class="btn" target="_blank">💻 GitHub</a>
+            <a href="https://www.linkedin.com/in/gabriel-schmeisk-107778196/?originalSubdomain=br" class="btn" target="_blank">💼 LinkedIn</a>
+            <a href="https://www.instagram.com/bielschmeisk/" class="btn" target="_blank">📷 Instagram</a>
+        </div>
+    </div>
+
+    <div class="copyright">
+        © 2025 Todos os direitos reservados - Gabriel Schmeisk.
+    </div>
+
+    <!-- Botão de controle de volume -->
+    <div class="volume-button" onclick="this.classList.toggle('active')">
+        <input type="range" class="volume-slider" min="0" max="100" value="100" oninput="setVolume(this.value)">
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Verifica se existe um volume salvo no localStorage
+            const savedVolume = localStorage.getItem('volume');
+            const audio = document.getElementById("background-audio");
+
+            // Se um volume salvo existir, ajusta o volume
+            if (savedVolume !== null) {
+                audio.volume = savedVolume / 100;
+                document.querySelector('.volume-slider').value = savedVolume;
+            } else {
+                audio.volume = 0.1; // Define volume padrão como 100%
+            }
+
+            // Espera a interação do usuário para iniciar o áudio
+            document.body.addEventListener('click', function () {
+                audio.play();
+            });
+        });
+
+        // Função para controlar o volume
+        function setVolume(value) {
+            const audio = document.getElementById("background-audio");
+            audio.volume = value / 100;
+
+            // Salva o volume no localStorage
+            localStorage.setItem('volume', value);
+
+            // Atualiza o ícone para "X" se o volume for 0
+            const volumeButton = document.querySelector('.volume-button');
+            const volumeSlider = document.querySelector('.volume-slider');
+
+            // Atualiza a visualização da posição do controle de volume
+            volumeSlider.value = value;
+
+            if (value == 0) {
+                volumeButton.classList.add('x');
+            } else {
+                volumeButton.classList.remove('x');
+            }
+        }
+
+        const canvas = document.getElementById("bg");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let stars = [];
+        const numStars = 150;
+        const repulsionRadius = 100;
+        let mouseX = null, mouseY = null;
+        let fadeAlpha = 1;
+        let fadeTimeout;
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: (Math.random() - 0.5) * 0.2
+            });
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+
+            for (let star of stars) {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+                star.x += star.vx;
+                star.y += star.vy;
+
+                if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
+                if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
+            }
+
+            if (mouseX !== null && mouseY !== null) {
+                ctx.globalAlpha = fadeAlpha;
+                connectStars();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function connectStars() {
+            for (let star of stars) {
+                let dx = mouseX - star.x;
+                let dy = mouseY - star.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 120) {
+                    ctx.beginPath();
+                    ctx.moveTo(star.x, star.y);
+                    ctx.lineTo(mouseX, mouseY);
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${fadeAlpha * 0.2})`;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function repulseStars() {
+            for (let star of stars) {
+                let dx = mouseX - star.x;
+                let dy = mouseY - star.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < repulsionRadius) {
+                    let angle = Math.atan2(dy, dx);
+                    let force = (repulsionRadius - distance) / repulsionRadius;
+                    star.vx = -Math.cos(angle) * force * 3;
+                    star.vy = -Math.sin(angle) * force * 3;
+                }
+            }
+        }
+
+        canvas.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            fadeAlpha = 1;
+            clearTimeout(fadeTimeout);
+            fadeTimeout = setTimeout(() => {
+                let fadeInterval = setInterval(() => {
+                    fadeAlpha -= 0.02;
+                    if (fadeAlpha <= 0) {
+                        clearInterval(fadeInterval);
+                        mouseX = null;
+                        mouseY = null;
+                    }
+                }, 50);
+            }, 3000);
+        });
+
+        canvas.addEventListener("click", () => repulseStars());
+
+        function animate() {
+            drawStars();
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
